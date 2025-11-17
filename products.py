@@ -1,32 +1,56 @@
 class Product:
-    def __init__(self, name, price, quantity):
+    def __init__(self, name: str, price: float, quantity: int):
         if not name:
             raise ValueError("Name darf nicht leer sein")
-        if price < 0 or quantity < 0:
-            raise ValueError("Preis und Menge dürfen nicht negativ sein")
+        if price < 0:
+            raise ValueError("Preis darf nicht negativ sein")
+        if quantity < 0:
+            raise ValueError("Menge darf nicht negativ sein")
 
         self.name = name
         self.price = price
-        self.quantity = quantity
-        self.active = True
+        self._quantity = quantity
+        self._active = True if quantity > 0 else False
 
-    # Methode, um Produkte zu kaufen
-    def buy(self, amount):
-        if amount > self.quantity:
-            return f"Not enough {self.name} in stock!"
-        self.quantity -= amount
-        return f"{amount} units of {self.name} bought. Remaining: {self.quantity}"
+    # Getter für Menge
+    def get_quantity(self) -> int:
+        return self._quantity
 
-    # Prüfen, ob das Produkt aktiv ist
-    def is_active(self):
-        return self.active
-
-    # Zeige Produktinformationen
-    def show(self):
-        print(f"Product: {self.name}, Price: {self.price}, Quantity: {self.quantity}, Active: {self.active}")
-
-    # Menge ändern
-    def set_quantity(self, new_quantity):
-        if new_quantity < 0:
+    # Setter für Menge
+    def set_quantity(self, quantity: int):
+        if quantity < 0:
             raise ValueError("Quantity cannot be negative")
-        self.quantity = new_quantity
+        self._quantity = quantity
+        if self._quantity == 0:
+            self.deactivate()
+        else:
+            self.activate()
+
+    # Getter für Aktiv-Status
+    def is_active(self) -> bool:
+        return self._active
+
+    # Aktivieren
+    def activate(self):
+        self._active = True
+
+    # Deaktivieren
+    def deactivate(self):
+        self._active = False
+
+    # Produktinfo ausgeben
+    def show(self):
+        print(f"{self.name}, Price: {self.price}, Quantity: {self._quantity}")
+
+    # Kaufen
+    def buy(self, quantity: int) -> float:
+        if quantity <= 0:
+            raise ValueError("Die Kaufmenge muss größer als 0 sein")
+        if quantity > self._quantity:
+            raise ValueError(f"Nicht genug {self.name} auf Lager")
+
+        total_price = self.price * quantity
+        self._quantity -= quantity
+        if self._quantity == 0:
+            self.deactivate()
+        return total_price
