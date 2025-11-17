@@ -1,6 +1,6 @@
-
 from products import Product
 from store import Store
+
 
 def start(store: Store):
     while True:

@@ -1,4 +1,4 @@
-# store.py
+
 from typing import List
 from products import Product  # Stelle sicher, dass die Product-Klasse in products.py definiert ist
 
