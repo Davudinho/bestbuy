@@ -2,7 +2,7 @@
 from products import Product
 from store import Store
 
-def start(store: St1ore):
+def start(store: Store):
     while True:
         print("\n--- Welcome to the Store ---")
         print("1. List all products in store")
