@@ -1,56 +1,74 @@
 class Product:
+    """Represents a product sold in the store."""
+
     def __init__(self, name: str, price: float, quantity: int):
-        if not name:
-            raise ValueError("Name darf nicht leer sein")
+        # --- Type Checks ---
+        if not isinstance(name, str):
+            raise TypeError("name must be a string")
+        if not isinstance(price, (float, int)):
+            raise TypeError("price must be a number")
+        if not isinstance(quantity, int):
+            raise TypeError("quantity must be an integer")
+
+        # --- Value Checks ---
+        if name.strip() == "":
+            raise ValueError("name cannot be empty")
         if price < 0:
-            raise ValueError("Preis darf nicht negativ sein")
+            raise ValueError("price cannot be negative")
         if quantity < 0:
-            raise ValueError("Menge darf nicht negativ sein")
+            raise ValueError("quantity cannot be negative")
 
-        self.name = name
-        self.price = price
+        # --- Assign values ---
+        self._name = name
+        self._price = float(price)
         self._quantity = quantity
-        self._active = True if quantity > 0 else False
-
-    # Getter für Menge
-    def get_quantity(self) -> int:
-        return self._quantity
-
-    # Setter für Menge
-    def set_quantity(self, quantity: int):
-        if quantity < 0:
-            raise ValueError("Quantity cannot be negative")
-        self._quantity = quantity
-        if self._quantity == 0:
-            self.deactivate()
-        else:
-            self.activate()
-
-    # Getter für Aktiv-Status
-    def is_active(self) -> bool:
-        return self._active
-
-    # Aktivieren
-    def activate(self):
         self._active = True
 
-    # Deaktivieren
+    def get_quantity(self) -> int:
+        """Returns the available quantity of the product."""
+        return self._quantity
+
+    def set_quantity(self, quantity: int):
+        """Sets the product quantity and deactivates it if quantity becomes 0."""
+        if not isinstance(quantity, int):
+            raise TypeError("quantity must be an integer")
+        if quantity < 0:
+            raise ValueError("quantity cannot be negative")
+
+        self._quantity = quantity
+        if quantity == 0:
+            self.deactivate()
+
+    def is_active(self) -> bool:
+        """Returns True if the product is active."""
+        return self._active
+
+    def activate(self):
+        """Activates the product."""
+        self._active = True
+
     def deactivate(self):
+        """Deactivates the product."""
         self._active = False
 
-    # Produktinfo ausgeben
     def show(self):
-        print(f"{self.name}, Price: {self.price}, Quantity: {self._quantity}")
+        """Prints a string representation of the product."""
+        print(f"{self._name}, Price: {self._price}, Quantity: {self._quantity}")
 
-    # Kaufen
     def buy(self, quantity: int) -> float:
+        """Buys a quantity of the product and returns total price."""
+        if not isinstance(quantity, int):
+            raise TypeError("quantity must be an integer")
         if quantity <= 0:
-            raise ValueError("Die Kaufmenge muss größer als 0 sein")
-        if quantity > self._quantity:
-            raise ValueError(f"Nicht genug {self.name} auf Lager")
+            raise ValueError("quantity must be positive")
 
-        total_price = self.price * quantity
+        if quantity > self._quantity:
+            raise ValueError("Not enough products in stock")
+
+        total_price = quantity * self._price
         self._quantity -= quantity
+
         if self._quantity == 0:
             self.deactivate()
+
         return total_price
